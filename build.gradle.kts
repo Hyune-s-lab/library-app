@@ -18,10 +18,19 @@ repositories {
 }
 
 dependencies {
+    val kotestVersion = "5.4.2"
+    val kotestExtVersion = "1.1.2"
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     runtimeOnly("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    // kotest
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-property:$kotestVersion")
+    implementation("io.kotest.extensions:kotest-extensions-spring:$kotestExtVersion")
 }
 
 tasks.withType<KotlinCompile> {
