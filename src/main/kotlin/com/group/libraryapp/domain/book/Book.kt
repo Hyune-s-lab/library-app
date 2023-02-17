@@ -11,6 +11,8 @@ class Book(
     @Column(nullable = false)
     val name: String,
 
+    val type: String,
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private val id: Long? = null,
@@ -20,4 +22,6 @@ class Book(
             throw IllegalArgumentException("이름은 비어 있을 수 없습니다")
         }
     }
+
+    companion object
 }

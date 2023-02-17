@@ -25,7 +25,7 @@ class BookServiceTest(
 ) : FunSpec({
     test("책 등록이 정상 동작한다") {
         // given
-        val request = BookRequest("이상한 나라의 엘리스")
+        val request = BookRequest("이상한 나라의 엘리스", "COMPUTER")
 
         // when
         bookService.saveBook(request)
@@ -34,11 +34,12 @@ class BookServiceTest(
         val books = bookRepository.findAll()
         assertThat(books).hasSize(1)
         assertThat(books[0].name).isEqualTo("이상한 나라의 엘리스")
+        assertThat(books[0].type).isEqualTo("COMPUTER")
     }
 
     test("책 대출이 정상 동작한다") {
         // given
-        bookRepository.save(Book("이상한 나라의 엘리스"))
+        bookRepository.save(Book.fixture("이상한 나라의 엘리스"))
         val savedUser = userRepository.save(User("최태현", null))
         val request = BookLoanRequest("최태현", "이상한 나라의 엘리스")
 
@@ -55,7 +56,7 @@ class BookServiceTest(
 
     test("책이 진작 대출되어 있다면, 신규 대출이 실패한다") {
         // given
-        bookRepository.save(Book("이상한 나라의 엘리스"))
+        bookRepository.save(Book.fixture("이상한 나라의 엘리스"))
         val savedUser = userRepository.save(User("최태현", null))
         userLoanHistoryRepository.save(UserLoanHistory(savedUser, "이상한 나라의 엘리스"))
         val request = BookLoanRequest("최태현", "이상한 나라의 엘리스")
@@ -128,4 +129,16 @@ class BookServiceTest(
         bookRepository.deleteAll()
         userRepository.deleteAll()
     }
+}
+
+private fun Book.Companion.fixture(
+    name: String = "책 이름",
+    type: String = "COMPUTER",
+    id: Long? = null,
+): Book {
+    return Book(
+        name = name,
+        type = type,
+        id = id,
+    )
 }
