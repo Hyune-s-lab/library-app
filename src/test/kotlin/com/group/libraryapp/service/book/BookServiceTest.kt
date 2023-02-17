@@ -7,12 +7,14 @@ import com.group.libraryapp.domain.user.User
 import com.group.libraryapp.domain.user.UserRepository
 import com.group.libraryapp.domain.user.loanhistory.UserLoanHistory
 import com.group.libraryapp.domain.user.loanhistory.UserLoanHistoryRepository
+import com.group.libraryapp.domain.user.loanhistory.UserLoanStatus
 import com.group.libraryapp.dto.book.request.BookLoanRequest
 import com.group.libraryapp.dto.book.request.BookRequest
 import com.group.libraryapp.dto.book.request.BookReturnRequest
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.TestCase
 import io.kotest.core.test.TestResult
+import io.kotest.matchers.shouldBe
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.test.context.SpringBootTest
@@ -50,16 +52,16 @@ class BookServiceTest(
         // then
         val results = userLoanHistoryRepository.findAll()
         assertThat(results).hasSize(1)
-        assertThat(results[0].bookName).isEqualTo("이상한 나라의 엘리스")
-        assertThat(results[0].user.id).isEqualTo(savedUser.id)
-        assertThat(results[0].isReturn).isFalse()
+        results[0].bookName shouldBe "이상한 나라의 엘리스"
+        results[0].user.id shouldBe savedUser.id
+        results[0].status shouldBe UserLoanStatus.LOANED
     }
 
     test("책이 진작 대출되어 있다면, 신규 대출이 실패한다") {
         // given
         bookRepository.save(Book.fixture("이상한 나라의 엘리스"))
         val savedUser = userRepository.save(User("최태현", null))
-        userLoanHistoryRepository.save(UserLoanHistory(savedUser, "이상한 나라의 엘리스"))
+        userLoanHistoryRepository.save(UserLoanHistory.fixture(savedUser, "이상한 나라의 엘리스"))
         val request = BookLoanRequest("최태현", "이상한 나라의 엘리스")
 
         // when & then
@@ -72,7 +74,7 @@ class BookServiceTest(
     test("책 반납이 정상 동작한다") {
         // given
         val savedUser = userRepository.save(User("최태현", null))
-        userLoanHistoryRepository.save(UserLoanHistory(savedUser, "이상한 나라의 엘리스"))
+        userLoanHistoryRepository.save(UserLoanHistory.fixture(savedUser, "이상한 나라의 엘리스"))
         val request = BookReturnRequest("최태현", "이상한 나라의 엘리스")
 
         // when
@@ -81,7 +83,7 @@ class BookServiceTest(
         // then
         val results = userLoanHistoryRepository.findAll()
         assertThat(results).hasSize(1)
-        assertThat(results[0].isReturn).isTrue()
+        results[0].status shouldBe UserLoanStatus.RETURNED
     }
 
 //  @Test
@@ -130,6 +132,20 @@ class BookServiceTest(
         bookRepository.deleteAll()
         userRepository.deleteAll()
     }
+}
+
+private fun UserLoanHistory.Companion.fixture(
+    user: User,
+    bookName: String = "이상한 나라의 엘리스",
+    status: UserLoanStatus = UserLoanStatus.LOANED,
+    id: Long? = null,
+): UserLoanHistory {
+    return UserLoanHistory(
+        user = user,
+        bookName = bookName,
+        status = status,
+        id = id,
+    )
 }
 
 private fun Book.Companion.fixture(

@@ -12,13 +12,15 @@ class UserLoanHistory(
     @ManyToOne
     val user: User,
     val bookName: String,
-    var isReturn: Boolean = false,
+    var status: UserLoanStatus = UserLoanStatus.LOANED,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 ) {
     fun doReturn() {
-        isReturn = true
+        status = UserLoanStatus.RETURNED
     }
+
+    companion object
 }
