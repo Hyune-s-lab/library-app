@@ -18,6 +18,8 @@ class UserLoanHistory(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 ) {
+    val isReturn = this.status == UserLoanStatus.RETURNED
+
     fun doReturn() {
         status = UserLoanStatus.RETURNED
     }
