@@ -119,8 +119,8 @@ class BookServiceTest(
 
         // then
         assertThat(results).hasSize(2)
-        results.first { it.type == BookType.COMPUTER }.count shouldBe 2
-        results.first { it.type == BookType.SCIENCE }.count shouldBe 1
+        results.first { it.type == BookType.COMPUTER }.count shouldBe 2L
+        results.first { it.type == BookType.SCIENCE }.count shouldBe 1L
     }
 }) {
     override suspend fun afterEach(testCase: TestCase, result: TestResult) {
