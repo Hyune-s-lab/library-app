@@ -8,6 +8,9 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
 
     id("org.jmailen.kotlinter") version "3.10.0"
+
+    kotlin("kapt") version "1.6.21"
+    idea
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11
@@ -21,6 +24,7 @@ repositories {
 dependencies {
     val kotestVersion = "5.4.2"
     val kotestExtVersion = "1.1.2"
+    val querydslVersion = "5.0.0"
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -33,6 +37,10 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-property:$kotestVersion")
     implementation("io.kotest.extensions:kotest-extensions-spring:$kotestExtVersion")
+
+    // querydsl
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
 }
 
 tasks.withType<KotlinCompile> {
@@ -44,4 +52,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+idea {
+    module {
+        val kaptMain = file("build/generated/source/kapt/main")
+        sourceDirs.add(kaptMain)
+        generatedSourceDirs.add(kaptMain)
+    }
 }
